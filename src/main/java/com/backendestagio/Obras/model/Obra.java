@@ -1,9 +1,12 @@
 package com.backendestagio.Obras.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "obra")
 public class Obra {
 
     @Id
@@ -22,29 +25,88 @@ public class Obra {
     @Column(nullable = false)
     private String status;
 
+    @Column(nullable = true)
     private String descricao;
 
-    @Column(name = "criado_em")
+    @Column(name = "criado_em", updatable = false)
     private LocalDateTime criadoEm = LocalDateTime.now();
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    @PrePersist
+    public void prePersist()
+    {
+        if (this.criadoEm == null)
+        {
+            this.criadoEm = LocalDateTime.now();
+        }
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public Long getId()
+    {
+        return id;
+    }
 
-    public String getEndereco() { return endereco; }
-    public void setEndereco(String endereco) { this.endereco = endereco; }
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
 
-    public String getClienteResponsavel() { return clienteResponsavel; }
-    public void setClienteResponsavel(String clienteResponsavel) { this.clienteResponsavel = clienteResponsavel; }
+    public String getNome()
+    {
+        return nome;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setNome(String nome)
+    {
+        this.nome = nome;
+    }
 
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public String getEndereco()
+    {
+        return endereco;
+    }
 
-    public LocalDateTime getCriadoEm() { return criadoEm; }
-    public void setCriadoEm(LocalDateTime criadoEm) { this.criadoEm = criadoEm; }
+    public void setEndereco(String endereco)
+    {
+        this.endereco = endereco;
+    }
+
+    public String getClienteResponsavel()
+    {
+        return clienteResponsavel;
+    }
+
+    public void setClienteResponsavel(String clienteResponsavel)
+    {
+        this.clienteResponsavel = clienteResponsavel;
+    }
+
+    public String getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(String status)
+    {
+        this.status = status;
+    }
+
+    public String getDescricao()
+    {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao)
+    {
+        this.descricao = descricao;
+    }
+
+    public LocalDateTime getCriadoEm()
+    {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(LocalDateTime criadoEm)
+    {
+        this.criadoEm = criadoEm;
+    }
 }
