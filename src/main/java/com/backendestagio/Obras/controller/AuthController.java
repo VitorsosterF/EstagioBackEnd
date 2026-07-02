@@ -35,7 +35,11 @@ public class AuthController {
 
         return usuarioRepository.findByEmail(email)
                 .filter(u -> passwordEncoder.matches(senha, u.getSenha()))
-                .map(u -> ResponseEntity.ok(Map.of("token", jwtService.gerarToken(u.getEmail()))))
+                .map(u -> ResponseEntity.ok(Map.of(
+                        "token", jwtService.gerarToken(u.getEmail()),
+                        "nome", u.getNome(),
+                        "sobrenome", u.getSobrenome()
+                )))
                 .orElse(ResponseEntity.status(401).build());
     }
 }

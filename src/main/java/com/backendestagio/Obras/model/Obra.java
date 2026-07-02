@@ -17,7 +17,13 @@ public class Obra {
     private String nome;
 
     @Column(nullable = false)
-    private String endereco;
+    private String rua;
+
+    @Column(nullable = false)
+    private String numero;
+
+    @Column
+    private String complemento;
 
     @Column(name = "cliente_responsavel", nullable = false)
     private String clienteResponsavel;
@@ -30,6 +36,12 @@ public class Obra {
 
     @Column(name = "criado_em", updatable = false)
     private LocalDateTime criadoEm = LocalDateTime.now();
+
+    @Column(name = "imagem_url")
+    private String imagemUrl;
+
+    public String getImagemUrl() { return imagemUrl; }
+    public void setImagemUrl(String imagemUrl) { this.imagemUrl = imagemUrl; }
 
     @PrePersist
     public void prePersist()
@@ -60,14 +72,34 @@ public class Obra {
         this.nome = nome;
     }
 
-    public String getEndereco()
+    public String getRua()
     {
-        return endereco;
+        return rua;
     }
 
-    public void setEndereco(String endereco)
+    public void setRua(String rua)
     {
-        this.endereco = endereco;
+        this.rua = rua;
+    }
+
+    public String getNumero()
+    {
+        return numero;
+    }
+
+    public void setNumero(String numero)
+    {
+        this.numero = numero;
+    }
+
+    public String getComplemento()
+    {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento)
+    {
+        this.complemento = complemento;
     }
 
     public String getClienteResponsavel()
