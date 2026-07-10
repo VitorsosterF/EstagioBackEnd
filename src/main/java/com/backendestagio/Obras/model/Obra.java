@@ -29,7 +29,7 @@ public class Obra {
     private String clienteResponsavel;
 
     @Column(nullable = false)
-    private String status;
+    private String status = "Não iniciada";
 
     @Column(nullable = true)
     private String descricao;

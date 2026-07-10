@@ -1,7 +1,6 @@
 package com.backendestagio.Obras.controller;
 
 import com.backendestagio.Obras.model.Usuario;
-import com.backendestagio.Obras.repository.UsuarioRepository;
 import com.backendestagio.Obras.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,10 +48,14 @@ public class UsuarioController
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (usuarioService.deletarUsuario(id)) {
-            return ResponseEntity.ok().build();
+    public ResponseEntity<String> deletar(@PathVariable Long id) {
+        try {
+            if (usuarioService.deletarUsuario(id)) {
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 }

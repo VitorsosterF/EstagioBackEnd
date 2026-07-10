@@ -26,18 +26,21 @@ public class ObraService
         return obraRepository.findAll();
     }
 
-    public Optional<Obra> buscarPorId(Long id) {
+    public Optional<Obra> buscarPorId(Long id)
+    {
         return obraRepository.findById(id);
     }
 
-    public Obra criar(Obra obra, MultipartFile imagem) throws IOException {
+    public Obra criar(Obra obra, MultipartFile imagem) throws IOException
+    {
         if (imagem != null && !imagem.isEmpty()) {
             obra.setImagemUrl(fileStorageService.salvar(imagem));
         }
         return obraRepository.save(obra);
     }
 
-    public Optional<Obra> atualizar(Long id, Obra obraAtualizada, MultipartFile imagem) throws IOException {
+    public Optional<Obra> atualizar(Long id, Obra obraAtualizada, MultipartFile imagem) throws IOException
+    {
         return obraRepository.findById(id).map(obra -> {
             obra.setNome(obraAtualizada.getNome());
             obra.setRua(obraAtualizada.getRua());
@@ -60,7 +63,8 @@ public class ObraService
         });
     }
 
-    public boolean deletar(Long id) {
+    public boolean deletar(Long id)
+    {
         return obraRepository.findById(id).map(obra -> {
             fileStorageService.deletar(obra.getImagemUrl());
             obraRepository.delete(obra);

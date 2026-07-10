@@ -1,6 +1,7 @@
 package com.backendestagio.Obras.service;
 
 import com.backendestagio.Obras.model.Usuario;
+import com.backendestagio.Obras.repository.ObraRepository;
 import com.backendestagio.Obras.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,11 +14,13 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ObraRepository obraRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder)
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, ObraRepository obraRepository)
     {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.obraRepository = obraRepository;
     }
 
     public List<Usuario> listarTodos()
@@ -55,6 +58,11 @@ public class UsuarioService {
     public boolean deletarUsuario(Long id)
     {
         return usuarioRepository.findById(id).map(usuario -> {
+            String nomeCompleto = usuario.getNome() + " " + usuario.getSobrenome();
+            boolean possuiObras = obraRepository.existsByClienteResponsavel(nomeCompleto);
+            if (possuiObras) {
+                throw new RuntimeException("Usuário possui obras associadas e não pode ser excluído.");
+            }
             usuarioRepository.delete(usuario);
             return true;
         }).orElse(false);
