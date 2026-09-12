@@ -1,5 +1,6 @@
 package com.backendestagio.Obras.controller;
 
+import com.backendestagio.Obras.dto.UsuarioRequest;
 import com.backendestagio.Obras.model.Usuario;
 import com.backendestagio.Obras.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
@@ -26,23 +27,23 @@ public class UsuarioController
     }
 
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody Usuario usuario) {
-        if (usuario.getNome() == null || usuario.getNome().isBlank() ||
-                usuario.getSobrenome() == null || usuario.getSobrenome().isBlank() ||
-                usuario.getEmail() == null || usuario.getEmail().isBlank() ||
-                usuario.getSenha() == null || usuario.getSenha().isBlank() ||
-                usuario.getPerfil() == null || usuario.getPerfil().isBlank()) {
+    public ResponseEntity<?> criar(@RequestBody UsuarioRequest request) {
+        if (request.getNome() == null || request.getNome().isBlank() ||
+                request.getSobrenome() == null || request.getSobrenome().isBlank() ||
+                request.getEmail() == null || request.getEmail().isBlank() ||
+                request.getSenha() == null || request.getSenha().isBlank() ||
+                request.getPerfil() == null || request.getPerfil().isBlank()) {
             return ResponseEntity.badRequest().body("Campos obrigatórios não preenchidos.");
         }
 
-        return usuarioService.criarUsuario(usuario)
+        return usuarioService.criarUsuario(request)
                 .map(erro -> ResponseEntity.status(409).body(erro))
                 .orElse(ResponseEntity.ok().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuarioAtualizado) {
-        return usuarioService.atualizarUsuario(id, usuarioAtualizado)
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody UsuarioRequest request) {
+        return usuarioService.atualizarUsuario(id, request)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

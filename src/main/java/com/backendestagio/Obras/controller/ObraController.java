@@ -1,5 +1,6 @@
 package com.backendestagio.Obras.controller;
 
+import com.backendestagio.Obras.dto.ObraRequest;
 import com.backendestagio.Obras.model.Obra;
 import com.backendestagio.Obras.service.ObraService;
 import org.springframework.http.ResponseEntity;
@@ -42,18 +43,22 @@ public class ObraController {
             @RequestPart("obra") String obraJson,
             @RequestPart(value = "imagem", required = false) MultipartFile imagem) throws IOException {
 
-        Obra obra = objectMapper.readValue(obraJson, Obra.class);
+        ObraRequest obra = objectMapper.readValue(obraJson, ObraRequest.class);
 
         if (obra.getNome() == null || obra.getNome().isBlank() ||
                 obra.getRua() == null || obra.getRua().isBlank() ||
                 obra.getComplemento() == null || obra.getComplemento().isBlank() ||
                 obra.getNumero() == null || obra.getNumero().isBlank() ||
-                obra.getClienteResponsavel() == null || obra.getClienteResponsavel().isBlank() ||
+                obra.getClienteId() == null ||
                 obra.getStatus() == null || obra.getStatus().isBlank()) {
             return ResponseEntity.badRequest().body("Campos obrigatórios não preenchidos.");
         }
 
-        return ResponseEntity.ok(obraService.criar(obra, imagem));
+        try {
+            return ResponseEntity.ok(obraService.criar(obra, imagem));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
@@ -63,11 +68,15 @@ public class ObraController {
             @RequestPart("obra") String obraJson,
             @RequestPart(value = "imagem", required = false) MultipartFile imagem) throws IOException {
 
-        Obra obraAtualizada = objectMapper.readValue(obraJson, Obra.class);
+        ObraRequest obraAtualizada = objectMapper.readValue(obraJson, ObraRequest.class);
 
-        return obraService.atualizar(id, obraAtualizada, imagem)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return obraService.atualizar(id, obraAtualizada, imagem)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

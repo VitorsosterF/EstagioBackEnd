@@ -25,8 +25,9 @@ public class Obra {
     @Column
     private String complemento;
 
-    @Column(name = "cliente_responsavel", nullable = false)
-    private String clienteResponsavel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Usuario cliente;
 
     @Column(nullable = false)
     private String status = "Não iniciada";
@@ -102,14 +103,14 @@ public class Obra {
         this.complemento = complemento;
     }
 
-    public String getClienteResponsavel()
+    public Usuario getCliente()
     {
-        return clienteResponsavel;
+        return cliente;
     }
 
-    public void setClienteResponsavel(String clienteResponsavel)
+    public void setCliente(Usuario cliente)
     {
-        this.clienteResponsavel = clienteResponsavel;
+        this.cliente = cliente;
     }
 
     public String getStatus()

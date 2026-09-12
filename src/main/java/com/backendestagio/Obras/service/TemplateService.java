@@ -39,6 +39,9 @@ public class TemplateService {
 
     public Template criar(Template template) {
         template.setVariaveis(extrairVariaveis(template.getCorpo()));
+        if (template.isPadraoNotificacaoStatus()) {
+            limparPadraoAnterior(null);
+        }
         return templateRepository.save(template);
     }
 
@@ -48,7 +51,21 @@ public class TemplateService {
             template.setTipo(templateAtualizado.getTipo());
             template.setCorpo(templateAtualizado.getCorpo());
             template.setVariaveis(extrairVariaveis(templateAtualizado.getCorpo()));
+            if (templateAtualizado.isPadraoNotificacaoStatus()) {
+                limparPadraoAnterior(id);
+            }
+            template.setPadraoNotificacaoStatus(templateAtualizado.isPadraoNotificacaoStatus());
             return templateRepository.save(template);
+        });
+    }
+
+    // Só um template pode ser o padrão de notificação de status por vez.
+    private void limparPadraoAnterior(Long idExcluir) {
+        templateRepository.findByPadraoNotificacaoStatusTrue().ifPresent(atual -> {
+            if (idExcluir == null || !atual.getId().equals(idExcluir)) {
+                atual.setPadraoNotificacaoStatus(false);
+                templateRepository.save(atual);
+            }
         });
     }
 

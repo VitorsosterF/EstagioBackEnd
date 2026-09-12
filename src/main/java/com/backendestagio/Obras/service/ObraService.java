@@ -1,7 +1,10 @@
 package com.backendestagio.Obras.service;
 
+import com.backendestagio.Obras.dto.ObraRequest;
 import com.backendestagio.Obras.model.Obra;
+import com.backendestagio.Obras.model.Usuario;
 import com.backendestagio.Obras.repository.ObraRepository;
+import com.backendestagio.Obras.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,12 +16,19 @@ import java.util.Optional;
 public class ObraService
 {
     private final ObraRepository obraRepository;
+    private final UsuarioRepository usuarioRepository;
     private final FileStorageService fileStorageService;
+    private final NotificacaoService notificacaoService;
 
-    public ObraService(ObraRepository obraRepository, FileStorageService fileStorageService)
+    public ObraService(ObraRepository obraRepository,
+                        UsuarioRepository usuarioRepository,
+                        FileStorageService fileStorageService,
+                        NotificacaoService notificacaoService)
     {
         this.obraRepository = obraRepository;
+        this.usuarioRepository = usuarioRepository;
         this.fileStorageService = fileStorageService;
+        this.notificacaoService = notificacaoService;
     }
 
     public List<Obra> listarTodas()
@@ -31,24 +41,38 @@ public class ObraService
         return obraRepository.findById(id);
     }
 
-    public Obra criar(Obra obra, MultipartFile imagem) throws IOException
+    public Obra criar(ObraRequest request, MultipartFile imagem) throws IOException
     {
+        Usuario cliente = buscarCliente(request.getClienteId());
+
+        Obra obra = new Obra();
+        obra.setNome(request.getNome());
+        obra.setRua(request.getRua());
+        obra.setNumero(request.getNumero());
+        obra.setComplemento(request.getComplemento());
+        obra.setCliente(cliente);
+        obra.setStatus(request.getStatus());
+        obra.setDescricao(request.getDescricao());
+
         if (imagem != null && !imagem.isEmpty()) {
             obra.setImagemUrl(fileStorageService.salvar(imagem));
         }
         return obraRepository.save(obra);
     }
 
-    public Optional<Obra> atualizar(Long id, Obra obraAtualizada, MultipartFile imagem) throws IOException
+    public Optional<Obra> atualizar(Long id, ObraRequest request, MultipartFile imagem) throws IOException
     {
         return obraRepository.findById(id).map(obra -> {
-            obra.setNome(obraAtualizada.getNome());
-            obra.setRua(obraAtualizada.getRua());
-            obra.setNumero(obraAtualizada.getNumero());
-            obra.setComplemento(obraAtualizada.getComplemento());
-            obra.setClienteResponsavel(obraAtualizada.getClienteResponsavel());
-            obra.setStatus(obraAtualizada.getStatus());
-            obra.setDescricao(obraAtualizada.getDescricao());
+            Usuario cliente = buscarCliente(request.getClienteId());
+            String statusAnterior = obra.getStatus();
+
+            obra.setNome(request.getNome());
+            obra.setRua(request.getRua());
+            obra.setNumero(request.getNumero());
+            obra.setComplemento(request.getComplemento());
+            obra.setCliente(cliente);
+            obra.setStatus(request.getStatus());
+            obra.setDescricao(request.getDescricao());
 
             if (imagem != null && !imagem.isEmpty()) {
                 fileStorageService.deletar(obra.getImagemUrl());
@@ -59,7 +83,13 @@ public class ObraService
                 }
             }
 
-            return obraRepository.save(obra);
+            Obra obraSalva = obraRepository.save(obra);
+
+            if (!statusAnterior.equals(obraSalva.getStatus())) {
+                notificacaoService.criarNotificacaoAutomatica(obraSalva);
+            }
+
+            return obraSalva;
         });
     }
 
@@ -70,5 +100,11 @@ public class ObraService
             obraRepository.delete(obra);
             return true;
         }).orElse(false);
+    }
+
+    private Usuario buscarCliente(Long clienteId)
+    {
+        return usuarioRepository.findById(clienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente informado não existe."));
     }
 }

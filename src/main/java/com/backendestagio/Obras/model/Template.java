@@ -26,6 +26,9 @@ public class Template {
     @Column(name = "criado_em", updatable = false)
     private LocalDateTime criadoEm;
 
+    @Column(name = "padrao_notificacao_status", nullable = false)
+    private boolean padraoNotificacaoStatus = false;
+
     @PrePersist
     public void prePersist() {
         if (this.criadoEm == null) {
@@ -50,4 +53,7 @@ public class Template {
 
     public LocalDateTime getCriadoEm() { return criadoEm; }
     public void setCriadoEm(LocalDateTime criadoEm) { this.criadoEm = criadoEm; }
+
+    public boolean isPadraoNotificacaoStatus() { return padraoNotificacaoStatus; }
+    public void setPadraoNotificacaoStatus(boolean padraoNotificacaoStatus) { this.padraoNotificacaoStatus = padraoNotificacaoStatus; }
 }
