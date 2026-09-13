@@ -1,5 +1,6 @@
 package com.backendestagio.Obras.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -37,6 +38,10 @@ public class Usuario
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
+    // Nunca serializar o hash da senha em respostas JSON. Só afeta leitura —
+    // todo write passa por UsuarioRequest (DTO), então setSenha() continua
+    // funcionando normalmente para login/cadastro/atualização.
+    @JsonIgnore
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 

@@ -26,7 +26,7 @@ public class UsuarioService {
 
     public List<Usuario> listarTodos()
     {
-        return usuarioRepository.findAll();
+        return usuarioRepository.findAllByOrderByIdAsc();
     }
 
     public Optional<String> criarUsuario(UsuarioRequest request)

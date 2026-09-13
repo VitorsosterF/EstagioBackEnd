@@ -7,6 +7,8 @@ import com.backendestagio.Obras.model.Usuario;
 import com.backendestagio.Obras.repository.NotificacaoRepository;
 import com.backendestagio.Obras.repository.ObraRepository;
 import com.backendestagio.Obras.repository.TemplateRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,6 +20,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class NotificacaoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(NotificacaoService.class);
 
     private final NotificacaoRepository notificacaoRepository;
     private final ObraRepository obraRepository;
@@ -61,13 +65,19 @@ public class NotificacaoService {
     // Disparada pelo ObraService quando o status de uma obra muda.
     // Só envia se houver um template marcado como padrão de notificação de status.
     public void criarNotificacaoAutomatica(Obra obra) {
-        templateRepository.findByPadraoNotificacaoStatusTrue().ifPresent(template -> {
-            Notificacao notificacao = new Notificacao();
-            notificacao.setObra(obra);
-            notificacao.setTemplate(template);
-            notificacao.setMensagem(montarMensagem(template, obra));
-            notificacaoRepository.save(notificacao);
-        });
+        Optional<Template> templatePadrao = templateRepository.findByPadraoNotificacaoStatusTrue();
+        if (templatePadrao.isEmpty()) {
+            logger.warn("Status da obra {} mudou para \"{}\", mas nenhum template está marcado como padrão " +
+                    "de notificação de status — o cliente não foi notificado.", obra.getId(), obra.getStatus());
+            return;
+        }
+
+        Template template = templatePadrao.get();
+        Notificacao notificacao = new Notificacao();
+        notificacao.setObra(obra);
+        notificacao.setTemplate(template);
+        notificacao.setMensagem(montarMensagem(template, obra));
+        notificacaoRepository.save(notificacao);
     }
 
     // Envio manual, feito pelo admin escolhendo obra + template.

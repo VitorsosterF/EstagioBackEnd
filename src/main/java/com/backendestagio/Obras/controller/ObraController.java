@@ -45,9 +45,10 @@ public class ObraController {
 
         ObraRequest obra = objectMapper.readValue(obraJson, ObraRequest.class);
 
+        // Complemento é opcional na model (Obra.complemento não é @Column(nullable = false)),
+        // então não pode ser exigido aqui.
         if (obra.getNome() == null || obra.getNome().isBlank() ||
                 obra.getRua() == null || obra.getRua().isBlank() ||
-                obra.getComplemento() == null || obra.getComplemento().isBlank() ||
                 obra.getNumero() == null || obra.getNumero().isBlank() ||
                 obra.getClienteId() == null ||
                 obra.getStatus() == null || obra.getStatus().isBlank()) {

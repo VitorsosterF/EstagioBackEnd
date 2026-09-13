@@ -29,7 +29,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        System.out.println("Entrou no método login");
         String email = body.get("email");
         String senha = body.get("senha");
 
