@@ -81,10 +81,14 @@ public class ObraController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (obraService.deletar(id)) {
-            return ResponseEntity.ok().build();
+    public ResponseEntity<?> deletar(@PathVariable Long id) {
+        try {
+            if (obraService.deletar(id)) {
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 }

@@ -1,8 +1,12 @@
 package com.backendestagio.Obras.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+// Ignora os campos internos que o Jackson enxerga quando serializa um proxy
+// Hibernate (Usuario chega como lazy em Obra.cliente) em vez do objeto real.
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "usuarios")
 public class Usuario

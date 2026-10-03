@@ -1,8 +1,11 @@
 package com.backendestagio.Obras.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+// Template chega como lazy em Notificacao.template - mesmo motivo do Usuario.
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "templates")
 public class Template {

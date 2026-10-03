@@ -5,6 +5,7 @@ import com.backendestagio.Obras.model.Obra;
 import com.backendestagio.Obras.model.Usuario;
 import com.backendestagio.Obras.repository.ObraRepository;
 import com.backendestagio.Obras.repository.UsuarioRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -96,8 +97,13 @@ public class ObraService
     public boolean deletar(Long id)
     {
         return obraRepository.findById(id).map(obra -> {
+            try {
+                obraRepository.delete(obra);
+                obraRepository.flush();
+            } catch (DataIntegrityViolationException e) {
+                throw new IllegalStateException("Obra possui notificações associadas e não pode ser excluída.");
+            }
             fileStorageService.deletar(obra.getImagemUrl());
-            obraRepository.delete(obra);
             return true;
         }).orElse(false);
     }

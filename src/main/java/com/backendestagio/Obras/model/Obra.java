@@ -1,10 +1,13 @@
 package com.backendestagio.Obras.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+// Obra chega como lazy em Notificacao.obra - mesmo motivo do Usuario.
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "obras")
 public class Obra {
